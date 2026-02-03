@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Be My Valentine?</title>
+    <style>
+        body {
+            background-color: #ffc0cb;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+            transition: background-color 1s ease;
+        }
+
+        h1 {
+            color: #d63384;
+            font-size: 3rem;
+            text-align: center;
+            text-shadow: 2px 2px white;
+            /* FIX: Ensure question stays on top of the growing button */
+            position: relative;
+            z-index: 100;
+            margin-bottom: 20px;
+            pointer-events: none;
+            /* Allows clicks to pass through text to the button behind it if they overlap */
+        }
+
+        h4 {
+            position: relative;
+            z-index: 100;
+        }
+
+        .main-content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        /* Styling for the side images */
+        .side-img {
+            position: fixed;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 250px;
+            height: auto;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            transition: opacity 0.5s ease;
+        }
+
+        .left-img {
+            left: 40px;
+        }
+
+        .right-img {
+            right: 40px;
+        }
+
+        .buttons {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        button {
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        #yesBtn {
+            background-color: #ff4d6d;
+            color: white;
+            /* FIX: Lower than h1 so it grows behind the text */
+            z-index: 20;
+        }
+
+        #noBtn {
+            background-color: #ffffff;
+            color: #ff4d6d;
+        }
+
+        #finalMessage {
+            display: none;
+            color: #d63384;
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .intermediate-content {
+            display: none;
+            /* Controlled by JS */
+            flex-direction: column;
+            /* Stacks the three divs vertically */
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            width: 100%;
+            max-height: 100vh;
+            overflow-y: auto;
+            /* Allows scrolling if there are too many images */
+        }
+
+        #happy-images1,
+        #happy-images2 {
+            display: flex;
+            /* Makes images inside these divs sit side-by-side */
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .intermediate-content img {
+            width: 12%;
+            /* Adjust size so they fit nicely */
+            height: auto;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s;
+        }
+
+        .intermediate-content img:hover {
+            transform: scale(1.1);
+            /* Cute little pop effect */
+        }
+
+        #intermediateTextContainer {
+            text-align: center;
+            padding: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <img id="leftImg" class="side-img left-img" src="images/me1.JPG" alt="Valentine Image Left">
+    <img id="rightImg" class="side-img right-img" src="images/me2.JPG" alt="Valentine Image Right">
+
+    <div class="main-content" id="mainContainer">
+        <div>
+            <h1 id="questionText">Will you be my Valentine?</h1>
+            <h4>Date: 12th(night) and 14th Feb(fullday)</h4>
+        </div>
+
+        <div class="buttons">
+            <button id="yesBtn">Yes</button>
+            <button id="noBtn">No</button>
+        </div>
+    </div>
+
+    <div class="intermediate-content" id="intermediatePage">
+        <div id="happy-images1">
+            <img src="images/happy1.jpeg" alt="">
+            <img src="images/happy2.jpeg" alt="">
+        </div>
+        <div>
+            <h1>YIPPPIEEEEEEE ME CAN'T WAIT TO HOP AND NOM YAA</h1>
+            <button id="detailsBtn" style="background: rgb(153, 103, 188);color: rgb(0, 0, 0);">CLICK!!!</button>
+        </div>
+        <div id="happy-images2">
+            <img src="images/happy3.jpeg" alt="">
+            <img src="images/happy4.jpeg" alt="">
+        </div>
+    </div>
+
+    <div id="finalMessage">
+        <img src="images/happy5.jpeg" alt="" style="width: 50%; height: 100%;">
+    </div>
+
+    <script>
+        const yesBtn = document.getElementById('yesBtn');
+        const noBtn = document.getElementById('noBtn');
+        const mainContainer = document.getElementById('mainContainer');
+        const message = document.getElementById('message');
+        const leftImg = document.getElementById('leftImg');
+        const rightImg = document.getElementById('rightImg');
+        const questionText = document.getElementById('questionText');
+
+        let yesScale = 1;
+        let noClicks = 0;
+
+        // Arrays for images and colors
+        // Update these filenames to match your local files
+        const leftImages = ["images/emo1.jpeg", "images/emo2.jpeg", "images/emo3.jpeg", "images/emo4.jpeg", "images/emo5.jpeg", "images/emo6.jpeg", "images/emo7.jpeg", "images/emo8.jpeg", "images/emo9.jpeg"];
+        const rightImages = ["images/emo10.jpeg", "images/emo11.jpeg", "images/emo12.jpeg", "images/emo13.jpeg", "images/emo14.jpeg", "images/emo15.jpeg", "images/emo16.jpeg", "images/emo17.jpeg", "images/emo18.jpeg",];
+        const colors = ["#ffc0cb", "#e6a1ad", "#b8868e", "#808080"];
+
+        noBtn.addEventListener('click', () => {
+            noClicks++;
+
+            // 1. Grow the Yes button
+            yesScale += 0.7;
+            yesBtn.style.transform = `scale(${yesScale})`;
+
+            // 2. Move the No button randomly
+            function moveNoButton() {
+                let x, y, isOverlapping;
+                const padding = 20; // Extra safety space around the Yes button
+
+                do {
+                    // Generate random coordinates
+                    x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+                    y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+
+                    // Get current "Yes" button boundaries
+                    const yesRect = yesBtn.getBoundingClientRect();
+
+                    // Check if the new "No" position overlaps with the "Yes" area
+                    isOverlapping = (
+                        x < yesRect.right + padding &&
+                        x + noBtn.offsetWidth > yesRect.left - padding &&
+                        y < yesRect.bottom + padding &&
+                        y + noBtn.offsetHeight > yesRect.top - padding
+                    );
+
+                } while (isOverlapping); // Keep trying until it's not overlapping
+
+                noBtn.style.position = 'fixed';
+                noBtn.style.left = `${x}px`;
+                noBtn.style.top = `${y}px`;
+            }
+            moveNoButton();
+
+            // 3. Update Images (Max 3 changes)
+            if (noClicks < leftImages.length) {
+                leftImg.src = leftImages[noClicks];
+                rightImg.src = rightImages[noClicks];
+            }
+
+            // 4. Fade background to grey
+            if (noClicks < colors.length + 1) {
+                document.body.style.backgroundColor = colors[noClicks];
+            }
+
+            // 5. Update text for drama
+            if (noClicks === 1) questionText.innerText = "Are you sureeeee?";
+            if (noClicks === 2) questionText.innerText = "Nuhuhhhhhhhhhhhhhhh";
+            if (noClicks === 3) questionText.innerText = "Me give you one last chance";
+            if (noClicks === 4) questionText.innerText = "Okay you owe me unlimited hops";
+            if (noClicks === 5) questionText.innerText = "and unlimited leg armpit time";
+            if (noClicks === 6) questionText.innerText = "and unlimited boobie time";
+            if (noClicks === 7) questionText.innerText = "me gon smack ya";
+            if (noClicks === 8) questionText.innerText = "RAHHHHHHHHHHHHHHHH";
+            if (noClicks === 9) {
+                questionText.innerText = "Fine. A brat has to be tamed";
+                questionText.style.color = "#333";
+            }
+        });
+
+        yesBtn.addEventListener('click', () => {
+            mainContainer.style.display = 'none';
+            leftImg.style.display = 'none';
+            rightImg.style.display = 'none';
+
+            // Show the intermediate page
+            intermediatePage.style.display = 'flex';
+            document.body.style.backgroundColor = '#ff85a1'; // Brighten it back up
+        });
+
+        // Action when "Click for details!" is clicked
+        detailsBtn.addEventListener('click', () => {
+            intermediatePage.style.display = 'none';
+            finalMessage.style.display = 'block';
+        });
+    </script>
+</body>
+
+</html>
