@@ -7,7 +7,8 @@
     <title>Be My Valentine?</title>
     <style>
         body {
-            background-color: #ffc0cb;
+            /* UPDATED: Lighter base pink color */
+            background-color: #fadadd;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             flex-direction: column;
@@ -24,12 +25,18 @@
             font-size: 3rem;
             text-align: center;
             text-shadow: 2px 2px white;
-            /* FIX: Ensure question stays on top of the growing button */
             position: relative;
             z-index: 100;
             margin-bottom: 20px;
             pointer-events: none;
-            /* Allows clicks to pass through text to the button behind it if they overlap */
+        }
+
+        h2 {
+            color: #d63384;
+            font-size: 2rem;
+            text-align: center;
+            text-shadow: 1px 1px white;
+            margin-bottom: 10px;
         }
 
         h4 {
@@ -46,7 +53,6 @@
             align-items: center;
         }
 
-        /* Styling for the side images */
         .side-img {
             position: fixed;
             top: 50%;
@@ -87,7 +93,6 @@
         #yesBtn {
             background-color: #ff4d6d;
             color: white;
-            /* FIX: Lower than h1 so it grows behind the text */
             z-index: 20;
         }
 
@@ -96,32 +101,59 @@
             color: #ff4d6d;
         }
 
-        #finalMessage {
+        /* Initial state for hidden pages */
+        #finalMessage,
+        #secMessage,
+        .intermediate-content {
             display: none;
+        }
+
+        #finalMessage,
+        #secMessage {
             color: #d63384;
             font-size: 2.5rem;
             font-weight: bold;
             text-align: center;
+            max-height: 100vh;
+            overflow-y: auto;
+            padding: 20px;
+            flex-direction: column;
+            /* Ensures content stacks nicely */
+            align-items: center;
+        }
+
+        /* Styling for the Dropdown */
+        select {
+            padding: 10px 20px;
+            font-size: 1.5rem;
+            color: #d63384;
+            border: 3px solid #ff4d6d;
+            border-radius: 20px;
+            background-color: white;
+            cursor: pointer;
+            outline: none;
+            margin-top: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            font-family: inherit;
+        }
+
+        select:hover {
+            background-color: #fff0f3;
         }
 
         .intermediate-content {
-            display: none;
-            /* Controlled by JS */
             flex-direction: column;
-            /* Stacks the three divs vertically */
             align-items: center;
             justify-content: center;
             gap: 20px;
             width: 100%;
             max-height: 100vh;
             overflow-y: auto;
-            /* Allows scrolling if there are too many images */
         }
 
         #happy-images1,
         #happy-images2 {
             display: flex;
-            /* Makes images inside these divs sit side-by-side */
             justify-content: center;
             flex-wrap: wrap;
             gap: 15px;
@@ -129,7 +161,6 @@
 
         .intermediate-content img {
             width: 12%;
-            /* Adjust size so they fit nicely */
             height: auto;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
@@ -138,12 +169,6 @@
 
         .intermediate-content img:hover {
             transform: scale(1.1);
-            /* Cute little pop effect */
-        }
-
-        #intermediateTextContainer {
-            text-align: center;
-            padding: 20px;
         }
     </style>
 </head>
@@ -180,9 +205,22 @@
         </div>
     </div>
 
+    <div id="secMessage">
+        <div style="margin-top: 40px; margin-bottom: 50px;">
+            <h2>What do you think we are nomming?</h2>
+            <select id="foodSelection">
+                <option value="" disabled selected>Guess here...</option>
+                <option value="italian">Italian 🍝</option>
+                <option value="chinese">Chinese 🥟</option>
+                <option value="asian">Asian 🍜</option>
+            </select>
+        </div>
+    </div>
+
     <div id="finalMessage">
-        <!-- <img src="images/happy5.jpeg" alt="" style="width: 50%; height: 100%;"> -->
-        <h1>Location: TBC</h1>
+        <h1>OTAYYYY THANTIEWWW</h1>
+        <h1>SEE YA ON VALENTINES!!</h1>
+        <h1>Location: Yanhuo (me no care, we are nomming chinese)</h1>
         <h1>Date: 9th February 2026</h1>
         <h1>Time: 6:30pm</h1>
         <h1>Dress Code: Comfy hehe</h1>
@@ -193,49 +231,47 @@
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const mainContainer = document.getElementById('mainContainer');
-        const message = document.getElementById('message');
         const leftImg = document.getElementById('leftImg');
         const rightImg = document.getElementById('rightImg');
         const questionText = document.getElementById('questionText');
 
+        // Pages
+        const intermediatePage = document.getElementById('intermediatePage');
+        const secMessage = document.getElementById('secMessage');
+        const finalMessage = document.getElementById('finalMessage');
+
+        // Buttons/Inputs
+        const detailsBtn = document.getElementById('detailsBtn');
+        const foodSelection = document.getElementById('foodSelection');
+
         let yesScale = 1;
         let noClicks = 0;
 
-        // Arrays for images and colors
-        // Update these filenames to match your local files
         const leftImages = ["images/emo1.jpeg", "images/emo2.jpeg", "images/emo3.jpeg", "images/emo4.jpeg", "images/emo5.jpeg", "images/emo6.jpeg", "images/emo7.jpeg", "images/emo8.jpeg", "images/emo9.jpeg"];
         const rightImages = ["images/emo10.jpeg", "images/emo11.jpeg", "images/emo12.jpeg", "images/emo13.jpeg", "images/emo14.jpeg", "images/emo15.jpeg", "images/emo16.jpeg", "images/emo17.jpeg", "images/emo18.jpeg",];
         const colors = ["#ffc0cb", "#e6a1ad", "#b8868e", "#808080"];
 
+        // --- NO BUTTON LOGIC ---
         noBtn.addEventListener('click', () => {
             noClicks++;
-
-            // 1. Grow the Yes button
             yesScale += 0.7;
             yesBtn.style.transform = `scale(${yesScale})`;
 
-            // 2. Move the No button randomly
             function moveNoButton() {
                 let x, y, isOverlapping;
-                const padding = 20; // Extra safety space around the Yes button
+                const padding = 20;
 
                 do {
-                    // Generate random coordinates
                     x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
                     y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
-
-                    // Get current "Yes" button boundaries
                     const yesRect = yesBtn.getBoundingClientRect();
-
-                    // Check if the new "No" position overlaps with the "Yes" area
                     isOverlapping = (
                         x < yesRect.right + padding &&
                         x + noBtn.offsetWidth > yesRect.left - padding &&
                         y < yesRect.bottom + padding &&
                         y + noBtn.offsetHeight > yesRect.top - padding
                     );
-
-                } while (isOverlapping); // Keep trying until it's not overlapping
+                } while (isOverlapping);
 
                 noBtn.style.position = 'fixed';
                 noBtn.style.left = `${x}px`;
@@ -243,18 +279,15 @@
             }
             moveNoButton();
 
-            // 3. Update Images (Max 3 changes)
             if (noClicks < leftImages.length) {
                 leftImg.src = leftImages[noClicks];
                 rightImg.src = rightImages[noClicks];
             }
 
-            // 4. Fade background to grey
             if (noClicks < colors.length + 1) {
                 document.body.style.backgroundColor = colors[noClicks];
             }
 
-            // 5. Update text for drama
             if (noClicks === 1) questionText.innerText = "Are you sureeeee?";
             if (noClicks === 2) questionText.innerText = "Nuhuhhhhhhhhhhhhhhh";
             if (noClicks === 3) questionText.innerText = "Me give you one last chance";
@@ -269,21 +302,32 @@
             }
         });
 
+        // --- STEP 1: YES BUTTON CLICKED ---
         yesBtn.addEventListener('click', () => {
             mainContainer.style.display = 'none';
             leftImg.style.display = 'none';
             rightImg.style.display = 'none';
 
-            // Show the intermediate page
+            // Show the Happy Image page
             intermediatePage.style.display = 'flex';
-            document.body.style.backgroundColor = '#ff85a1'; // Brighten it back up
+            document.body.style.backgroundColor = '#ff85a1';
         });
 
-        // Action when "Click for details!" is clicked
+        // --- STEP 2: "CLICK!!!" BUTTON CLICKED ---
         detailsBtn.addEventListener('click', () => {
             intermediatePage.style.display = 'none';
-            finalMessage.style.display = 'block';
+
+            // Show the Food Selection page
+            secMessage.style.display = 'flex';
         });
+
+        // --- STEP 3: FOOD SELECTED ---
+        foodSelection.addEventListener('change', () => {
+            // Once they select an option, move to final page
+            secMessage.style.display = 'none';
+            finalMessage.style.display = 'flex';
+        });
+
     </script>
 </body>
 
