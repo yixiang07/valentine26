@@ -5,11 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Be My Valentine?</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600&family=Quicksand:wght@400;600;700&display=swap"
+        rel="stylesheet">
+
     <style>
         body {
-            /* UPDATED: Lighter base pink color */
+            /* Lighter base pink color */
             background-color: #fadadd;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-image: linear-gradient(180deg, #fadadd 0%, #ffedf0 100%);
+
+            /* NEW BODY FONT */
+            font-family: 'Quicksand', sans-serif;
+            font-weight: 600;
+
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -20,39 +32,89 @@
             transition: background-color 1s ease;
         }
 
-        h1 {
+        /* NEW HEADING FONT */
+        h1,
+        h2 {
+            font-family: 'Fredoka', sans-serif;
+            font-weight: 600;
+            /* Bold and Bubbly */
             color: #d63384;
-            font-size: 3rem;
-            text-align: center;
-            text-shadow: 2px 2px white;
-            position: relative;
-            z-index: 100;
-            margin-bottom: 20px;
-            pointer-events: none;
+            text-shadow: 3px 3px 0px rgba(255, 255, 255, 0.8);
+            margin: 10px 0;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 3.5rem;
         }
 
         h2 {
-            color: #d63384;
-            font-size: 2rem;
-            text-align: center;
-            text-shadow: 1px 1px white;
-            margin-bottom: 10px;
+            font-size: 2.2rem;
         }
 
         h4 {
+            color: #d63384;
+            font-weight: 700;
             position: relative;
             z-index: 100;
+            font-size: 1.2rem;
         }
 
-        .main-content {
+        /* --- THE AESTHETIC CARD STYLE (Glassmorphism) --- */
+        .glass-card {
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            border-radius: 30px;
+            /* Rounder corners */
+            padding: 40px;
+            box-shadow: 0 8px 32px 0 rgba(214, 51, 132, 0.2);
+            border: 3px solid rgba(255, 255, 255, 0.9);
             text-align: center;
-            position: relative;
-            z-index: 10;
-            display: flex;
+            max-width: 600px;
+            width: 90%;
+            display: none;
             flex-direction: column;
             align-items: center;
+            animation: popIn 0.5s ease;
         }
 
+        @keyframes popIn {
+            0% {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /* List of details styling */
+        .details-list {
+            text-align: left;
+            margin-top: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            padding: 25px;
+            border-radius: 20px;
+            width: 100%;
+            box-shadow: inset 0 0 10px rgba(255, 192, 203, 0.2);
+        }
+
+        .detail-item {
+            font-size: 1.3rem;
+            color: #d63384;
+            margin: 12px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .icon {
+            font-size: 1.6rem;
+        }
+
+        /* Side Images */
         .side-img {
             position: fixed;
             top: 50%;
@@ -62,6 +124,7 @@
             border-radius: 20px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             transition: opacity 0.5s ease;
+            border: 6px solid white;
         }
 
         .left-img {
@@ -72,22 +135,29 @@
             right: 40px;
         }
 
+        /* Buttons */
         .buttons {
             display: flex;
-            justify-content: center;
-            align-items: center;
             gap: 30px;
             margin-top: 30px;
         }
 
         button {
-            padding: 15px 30px;
-            font-size: 1.2rem;
+            padding: 15px 35px;
+            font-size: 1.4rem;
             border: none;
             border-radius: 50px;
             cursor: pointer;
-            transition: all 0.2s ease-in-out;
+            transition: transform 0.2s, box-shadow 0.2s;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+            /* Apply Cute Font to Buttons too */
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
         }
 
         #yesBtn {
@@ -101,74 +171,58 @@
             color: #ff4d6d;
         }
 
-        /* Initial state for hidden pages */
-        #finalMessage,
-        #secMessage,
-        .intermediate-content {
-            display: none;
-        }
-
-        #finalMessage,
-        #secMessage {
-            color: #d63384;
-            font-size: 2.5rem;
-            font-weight: bold;
-            text-align: center;
-            max-height: 100vh;
-            overflow-y: auto;
-            padding: 20px;
-            flex-direction: column;
-            /* Ensures content stacks nicely */
-            align-items: center;
-        }
-
-        /* Styling for the Dropdown */
+        /* Dropdown Styling */
         select {
-            padding: 10px 20px;
-            font-size: 1.5rem;
+            padding: 12px 20px;
+            font-size: 1.3rem;
             color: #d63384;
             border: 3px solid #ff4d6d;
             border-radius: 20px;
             background-color: white;
             cursor: pointer;
             outline: none;
-            margin-top: 10px;
+            margin-top: 15px;
             box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            font-family: inherit;
-        }
-
-        select:hover {
-            background-color: #fff0f3;
-        }
-
-        .intermediate-content {
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 20px;
+            font-family: 'Quicksand', sans-serif;
+            font-weight: bold;
             width: 100%;
-            max-height: 100vh;
-            overflow-y: auto;
         }
 
-        #happy-images1,
-        #happy-images2 {
+        /* Image Grid for Happy Page */
+        .img-grid {
             display: flex;
             justify-content: center;
-            flex-wrap: wrap;
             gap: 15px;
+            margin: 10px 0;
         }
 
-        .intermediate-content img {
-            width: 12%;
-            height: auto;
+        .img-grid img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
             border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            border: 4px solid white;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
             transition: transform 0.3s;
         }
 
-        .intermediate-content img:hover {
+        .img-grid img:hover {
             transform: scale(1.1);
+        }
+
+        .main-content {
+            text-align: center;
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        #intermediatePage,
+        #secMessage,
+        #finalMessage {
+            display: none;
         }
     </style>
 </head>
@@ -190,41 +244,57 @@
         </div>
     </div>
 
-    <div class="intermediate-content" id="intermediatePage">
-        <div id="happy-images1">
+    <div class="glass-card" id="intermediatePage">
+        <div class="img-grid">
             <img src="images/happy1.jpeg" alt="">
             <img src="images/happy2.jpeg" alt="">
         </div>
-        <div>
-            <h1>YIPPPIEEEEEEE ME CAN'T WAIT TO HOP AND NOM YAA</h1>
-            <button id="detailsBtn" style="background: rgb(153, 103, 188);color: rgb(0, 0, 0);">CLICK!!!</button>
-        </div>
-        <div id="happy-images2">
+
+        <h1 style="font-size: 2.2rem; margin: 20px 0;">YIPPPIEEEEEEE ME CAN'T WAIT TO HOP AND NOM YAA</h1>
+        <button id="detailsBtn" style="background: #9967bc; color: white;">CLICK FOR DETAILS!!!</button>
+
+        <div class="img-grid">
             <img src="images/happy3.jpeg" alt="">
             <img src="images/happy4.jpeg" alt="">
         </div>
     </div>
 
-    <div id="secMessage">
-        <div style="margin-top: 40px; margin-bottom: 50px;">
-            <h2>What do you think we are nomming?</h2>
-            <select id="foodSelection">
-                <option value="" disabled selected>Guess here...</option>
-                <option value="italian">Italian 🍝</option>
-                <option value="chinese">Chinese 🥟</option>
-                <option value="asian">Asian 🍜</option>
-            </select>
-        </div>
+    <div class="glass-card" id="secMessage">
+        <h2>What do you think we are nomming?</h2>
+        <select id="foodSelection">
+            <option value="" disabled selected>Guess here...</option>
+            <option value="italian">Italian 🍝</option>
+            <option value="chinese">Chinese 🥟</option>
+            <option value="asian">Asian 🍜</option>
+        </select>
     </div>
 
-    <div id="finalMessage">
-        <h1>OTAYYYY THANTIEWWW</h1>
-        <h1>SEE YA ON VALENTINES!!</h1>
-        <h1>Location: Yanhuo (me no care, we are nomming chinese)</h1>
-        <h1>Date: 9th February 2026</h1>
-        <h1>Time: 6:30pm</h1>
-        <h1>Dress Code: Comfy hehe</h1>
-        <h1>Pre requisites: Be hoppable</h1>
+    <div class="glass-card" id="finalMessage">
+        <h1>OTAYYYY THANTIEWWW 💖</h1>
+        <h2>SEE YA ON VALENTINES!!</h2>
+
+        <div class="details-list">
+            <div class="detail-item">
+                <span class="icon">📍</span>
+                <span><strong>Location:</strong> <span id="locationText">TBC</span></span>
+            </div>
+            <div class="detail-item">
+                <span class="icon">📅</span>
+                <span><strong>Date:</strong> 9th February 2026</span>
+            </div>
+            <div class="detail-item">
+                <span class="icon">⏰</span>
+                <span><strong>Time:</strong> 6:30pm</span>
+            </div>
+            <div class="detail-item">
+                <span class="icon">👗</span>
+                <span><strong>Dress Code:</strong> Comfy hehe</span>
+            </div>
+            <div class="detail-item">
+                <span class="icon">🐰</span>
+                <span><strong>Pre-requisites:</strong> Be hoppable</span>
+            </div>
+        </div>
     </div>
 
     <script>
@@ -235,21 +305,20 @@
         const rightImg = document.getElementById('rightImg');
         const questionText = document.getElementById('questionText');
 
-        // Pages
         const intermediatePage = document.getElementById('intermediatePage');
         const secMessage = document.getElementById('secMessage');
         const finalMessage = document.getElementById('finalMessage');
-
-        // Buttons/Inputs
         const detailsBtn = document.getElementById('detailsBtn');
         const foodSelection = document.getElementById('foodSelection');
+        const locationText = document.getElementById('locationText');
 
         let yesScale = 1;
         let noClicks = 0;
 
         const leftImages = ["images/emo1.jpeg", "images/emo2.jpeg", "images/emo3.jpeg", "images/emo4.jpeg", "images/emo5.jpeg", "images/emo6.jpeg", "images/emo7.jpeg", "images/emo8.jpeg", "images/emo9.jpeg"];
         const rightImages = ["images/emo10.jpeg", "images/emo11.jpeg", "images/emo12.jpeg", "images/emo13.jpeg", "images/emo14.jpeg", "images/emo15.jpeg", "images/emo16.jpeg", "images/emo17.jpeg", "images/emo18.jpeg",];
-        const colors = ["#ffc0cb", "#e6a1ad", "#b8868e", "#808080"];
+
+        const colors = ["#fadadd", "#f5c2c7", "#e6a1ad", "#808080"];
 
         // --- NO BUTTON LOGIC ---
         noBtn.addEventListener('click', () => {
@@ -259,18 +328,24 @@
 
             function moveNoButton() {
                 let x, y, isOverlapping;
-                const padding = 20;
+                const safeMargin = 30; // Keep button 30px away from edge
+                const overlapPadding = 20;
+
+                const maxWidth = window.innerWidth - noBtn.offsetWidth - safeMargin;
+                const maxHeight = window.innerHeight - noBtn.offsetHeight - safeMargin;
 
                 do {
-                    x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
-                    y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+                    x = Math.random() * (maxWidth - safeMargin) + safeMargin;
+                    y = Math.random() * (maxHeight - safeMargin) + safeMargin;
+
                     const yesRect = yesBtn.getBoundingClientRect();
                     isOverlapping = (
-                        x < yesRect.right + padding &&
-                        x + noBtn.offsetWidth > yesRect.left - padding &&
-                        y < yesRect.bottom + padding &&
-                        y + noBtn.offsetHeight > yesRect.top - padding
+                        x < yesRect.right + overlapPadding &&
+                        x + noBtn.offsetWidth > yesRect.left - overlapPadding &&
+                        y < yesRect.bottom + overlapPadding &&
+                        y + noBtn.offsetHeight > yesRect.top - overlapPadding
                     );
+
                 } while (isOverlapping);
 
                 noBtn.style.position = 'fixed';
@@ -302,28 +377,32 @@
             }
         });
 
-        // --- STEP 1: YES BUTTON CLICKED ---
+        // --- YES BUTTON ---
         yesBtn.addEventListener('click', () => {
             mainContainer.style.display = 'none';
             leftImg.style.display = 'none';
             rightImg.style.display = 'none';
-
-            // Show the Happy Image page
             intermediatePage.style.display = 'flex';
-            document.body.style.backgroundColor = '#ff85a1';
+            document.body.style.backgroundColor = '#ffc2d1';
         });
 
-        // --- STEP 2: "CLICK!!!" BUTTON CLICKED ---
+        // --- DETAILS BUTTON ---
         detailsBtn.addEventListener('click', () => {
             intermediatePage.style.display = 'none';
-
-            // Show the Food Selection page
             secMessage.style.display = 'flex';
         });
 
-        // --- STEP 3: FOOD SELECTED ---
-        foodSelection.addEventListener('change', () => {
-            // Once they select an option, move to final page
+        // --- FOOD SELECTION ---
+        foodSelection.addEventListener('change', function () {
+            const choice = this.value;
+            let locationName = "TBC";
+
+            if (choice === "italian") locationName = "Yanhuo (we're nomming chinese me no care)";
+            if (choice === "chinese") locationName = "Yanhuo (we're nomming chinese me no care)";
+            if (choice === "asian") locationName = "Yanhuo (we're nomming chinese me no care)";
+
+            locationText.innerText = locationName;
+
             secMessage.style.display = 'none';
             finalMessage.style.display = 'flex';
         });
